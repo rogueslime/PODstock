@@ -3,13 +3,18 @@ import axios from 'axios';
 
 const LocationItemManager = () => {
     const [locations, setLocations] = useState([]);
-    const [items, setItems] = useState([]);
+    const [items, setItems] = useState([]); // filteredItems preferred, legacy inclusion
+    const [filteredItems, setFilteredItems] = useState([]);
     const [locationItems, setLocationItems] = useState([]);
     const [locItFormData, setLocItFormData] = useState({
         location_id: '',
         item_id: '',
         count: 1,
     });
+
+    // shipment import state variables
+    const [importFile, setImportFile] = useState(null);
+    const [importLocation, setImportLocation] = useState('');
 
     useEffect(() => {
         fetchLocations();
@@ -25,6 +30,7 @@ const LocationItemManager = () => {
     const fetchItems = async () => {
         const res = await axios.get('/api/items');
         setItems(res.data);
+        setFilteredItems(res.data);
     };
 
     const fetchLocationItems = async () => {
@@ -32,8 +38,15 @@ const LocationItemManager = () => {
         setLocationItems(res.data);
     };
 
-    const handleLocationItemChange = (e) => {
+    const handleLocationItemChange = async (e) => { // Filters items, only allowing creation of items not already tracked on that location's inventory. CURRENTLY NOT WORKING
         const { name, value } = e.target;
+        
+        if( name === 'location_id') {
+            const res = await axios.get(`/api/locationitems/${value}`);
+            const usedItemIds = res.data.map(li => li.item_id._id || li.item_id);
+            setFilteredItems(items.filter(item => !usedItemIds.includes(item._id)));
+        }
+
         setLocItFormData({
             ...locItFormData,
             [name]: name === 'count' ? parseInt(value) : value,
@@ -53,6 +66,24 @@ const LocationItemManager = () => {
             fetchLocationItems();
         } catch (err) {
             console.error('Error submitting location item, ', err);
+        }
+    };
+
+    // import submission logic
+    const handleImportSubmit = async (type) => {
+        if (!importFile || !importLocation) return;
+
+        const formData = new FormData();
+        formData.append('file', importFile);
+
+        try {
+            await axios.post(`/api/locationitems/${type}/${importLocation}`, formData, {
+                headers: {'Content-Type': 'multipart/form-data'}
+            });
+            alert(`${type} import successful`);
+            fetchLocationItems();
+        } catch (err) {
+            console.error(`Error importing ${type}: `,err);
         }
     };
 
@@ -80,7 +111,7 @@ const LocationItemManager = () => {
                     required
                 >
                     <option value="">-- Select Item --</option>
-                    {items.map(item => (
+                    {filteredItems.map(item => (
                         <option key={item._id} value = {item._id}>
                             {item.name}
                         </option>
@@ -96,6 +127,19 @@ const LocationItemManager = () => {
                 />
 
                 <button type = "submit">Submit</button>
+            </form>
+
+            {/*Import Shipment form*/}
+            <h3>Import Shipment</h3>
+            <form onSubmit = { (e) => {e.preventDefault(); handleImportSubmit('import-shipment'); }}>
+                <select onChange={(e) => setImportLocation(e.target.value)} required>
+                    <option value="">Select Location</option>
+                    {locations.map(loc => (
+                        <option key={loc._id} value={loc._id}>{loc.name}</option>
+                    ))}
+                </select>
+                <input type="file" accept=".csv" onChange={(e) => setImportFile(e.target.files[0])} required />
+                <button type="submit">Import</button>
             </form>
 
             <h2>Location Inventory List</h2>

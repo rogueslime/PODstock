@@ -1,5 +1,9 @@
+const fs = require('fs');
+const csv = require('csv-parser');
+const path = require('path');
 const ItemsLocations = require('../models/Items_Locations.js');
 const Location = require('../models/Locations');
+const Case = require ('../models/Cases');
 
 exports.createLocationItem = async (req, res) => {
     try{
@@ -45,7 +49,7 @@ exports.updateLocationItem = async (req, res) => {
             req.body,
             { new: true }
         );
-        if (!locationitem)
+        if (!locationItem)
             return res.status(404).json({ error: "Location item not found." })
         res.status(200).json(locationItem);
     } catch (err) {
@@ -63,4 +67,46 @@ exports.deleteLocationItem = async (req, res) => {
         console.error('Error deleting location item: ', err);
         res.status(500).json({ message: 'Server error deleting location item.'});
     }
+};
+
+// special route for handling shipment imports
+exports.importShipment = async (req, res) => {
+    console.log('Uploaded file info: ',req.file);
+    const locationId = req.params.locationId;
+    const filePath = path.join(__dirname, '../uploads', req.file.filename);
+    console.log("Filepath saved at... ", filePath);
+
+    const results = [];
+
+    fs.createReadStream(filePath)
+        .pipe(csv())
+        .on('data', data => results.push(data))
+        .on('end', async () => {
+            try {
+                for(const entry of results) {
+                    const caseLabel = entry.case_label;
+                    const caseQuantity = parseInt(entry.quantity);
+
+                    const foundCase = await Case.findOne({ name: caseLabel }).populate('item_id');
+                    if (!foundCase || !foundCase.item_id) {
+                        console.log('case ',caseLabel, ' missed - missing case or item.');
+                        continue;
+                    }
+
+                    const totalItems = foundCase.itemcount * caseQuantity;
+                    
+                    await ItemsLocations.findOneAndUpdate (
+                        { item_id: foundCase.item_id._id, location_id: locationId },
+                        { $inc: { count: totalItems }, updated_at: new Date() },
+                        { upsert: true, new: true }
+                    );
+                }
+                res.json({ message: 'Shipment imported.' });
+            } catch (err) {
+                console.error('Shipment import error: ',err);
+                res.status(500).json({ error: 'Import error.' });
+            } finally {
+                fs.unlinkSync(filePath);
+            }
+        });
 };
