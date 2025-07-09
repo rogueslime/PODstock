@@ -20,8 +20,10 @@ mongoose.connect(process.env.MONGO_URI, {
 .catch((err) => console.error('MongoDB Connection Error -- ', err));
 
 // DB Routes
-app.use("api/items", require("./routes/itemRoutes"));
-//app.use("api/cases", require("./routes/caseRoutes"));
+app.use("/api/items", require("./routes/itemRoutes"));
+app.use("/api/cases", require("./routes/caseRoutes"));
+app.use("/api/locations", require("./routes/locationRoutes"));
+app.use("/api/locationitems", require("./routes/locationItemRoutes"));
 //app.use("api/inventory", require("./routes/inventoryRoutes"));
 //app.use("api/logs", require("./routes/logRoutes"));
 
