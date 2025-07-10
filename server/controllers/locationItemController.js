@@ -4,6 +4,7 @@ const path = require('path');
 const ItemsLocations = require('../models/Items_Locations.js');
 const Location = require('../models/Locations');
 const Case = require ('../models/Cases');
+const Item = require ('../models/Items');
 
 exports.createLocationItem = async (req, res) => {
     try{
@@ -68,6 +69,46 @@ exports.deleteLocationItem = async (req, res) => {
         res.status(500).json({ message: 'Server error deleting location item.'});
     }
 };
+
+// special route for handling daily operations
+exports.dailyOperations = async (req, res) => {
+    console.log('Uploaded file info: ',req.file);
+    const locationId = req.params.locationId;
+    const filePath = path.join(__dirname, '../uploads', req.file.filename);
+    console.log('Filepath saved at... ', filePath);
+
+    const results = [];
+
+    fs.createReadStream(filePath)
+        .pipe(csv())
+        .on('data', data => results.push(data))
+        .on('end', async () => {
+            try {
+                for(const entry of results) {
+                    const itemLabel = entry.item_label;
+                    const itemQuantity = parseInt(entry.quantity);
+
+                    const foundItem = await Item.findOne({ name: itemLabel });
+                    if (!foundItem) {
+                        console.log('item ',itemLabel, ' missed - missing item.');
+                        continue;
+                    }
+                    
+                    await ItemsLocations.findOneAndUpdate (
+                        { item_id: foundItem._id, location_id: locationId },
+                        { $inc: { count: itemQuantity }, updated_at: new Date() },
+                        { upsert: true, new: true }
+                    );
+                }
+                res.json({ message: 'Daily ops imported.' });
+            } catch (err) {
+                console.error('Daily ops import error: ',err);
+                res.status(500).json({ error: 'Import error.' });
+            } finally {
+                fs.unlinkSync(filePath);
+            }
+        });
+}
 
 // special route for handling shipment imports
 exports.importShipment = async (req, res) => {

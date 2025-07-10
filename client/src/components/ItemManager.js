@@ -18,7 +18,7 @@ const ItemManager = () => {
 
     const fetchItems = async () => {
         try {
-            const res = await axios.get('api/items');
+            const res = await axios.get('/api/items');
             setItems(res.data);
         } catch (err) {
             console.error('Error fetching items: ', err);
@@ -60,7 +60,7 @@ const ItemManager = () => {
                 await axios.put(`/api/items/${editItemId}`, payload);
             } else { // otherwise create a NEW item
                 payload.created_at = new Date();
-                await axios.post('api/items', payload);
+                await axios.post('/api/items', payload);
             }
 
             // then we reset the form to blank

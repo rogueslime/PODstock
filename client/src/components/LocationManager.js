@@ -14,7 +14,7 @@ const LocationManager = () => {
 
     const fetchLocations = async () => {
         try {
-            const res = await axios.get('api/locations');
+            const res = await axios.get('/api/locations');
             setLocations(res.data);
         } catch (err) {
             console.error('Error fetching items: ',err);
@@ -39,7 +39,7 @@ const LocationManager = () => {
 
         try {
             payload.created_at = new Date();
-            await axios.post('api/locations', payload);
+            await axios.post('/api/locations', payload);
 
             setLocationFormData({ name:'', is_active: true});
             fetchLocations();

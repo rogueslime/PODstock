@@ -27,6 +27,6 @@ router.delete("/:id", locationItemController.deleteLocationItem);
 
 // routes for csv imports
 router.post('/import-shipment/:locationId', upload.single('file'), locationItemController.importShipment);
-//router.post('/daily-operations/:locationId', upload.single('file'), locationItemController.dailyOperations);
+router.post('/daily-operations/:locationId', upload.single('file'), locationItemController.dailyOperations);
 
 module.exports = router;

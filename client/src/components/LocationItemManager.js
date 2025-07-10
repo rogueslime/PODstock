@@ -142,6 +142,18 @@ const LocationItemManager = () => {
                 <button type="submit">Import</button>
             </form>
 
+            <h3>Import Daily Operations</h3>
+            <form onSubmit = { (e) => {e.preventDefault(); handleImportSubmit('daily-operations'); }}>
+                <select onChange={(e) => setImportLocation(e.target.value)} required>
+                    <option value="">Select Location</option>
+                    {locations.map(loc => (
+                        <option key={loc._id} value={loc._id}>{loc.name}</option>
+                    ))}
+                </select>
+                <input type="file" accept=".csv" onChange={(e) => setImportFile(e.target.files[0])} required />
+                <button type="submit">Import</button>
+            </form>
+
             <h2>Location Inventory List</h2>
             <table border = "1" cellpadding = "5" cellspacing ="0">
                 <thead>

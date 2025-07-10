@@ -1,15 +1,26 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const session = require('express-session');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+const corsOptions = {
+  origin: 'http://localhost:3000', // in prod, would be frontend URL
+  credentials: true
+};
+app.use(cors(corsOptions));
 app.use(express.json());
-
-app.get('/', (req, res) => {
-  res.send('Hello from the backend!');
-});
+app.use(session({
+  secret: 'super-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: false,
+    maxAge: 1000 * 60 * 60 * 24,
+  }
+}));
 
 // Connect to DB
 mongoose.connect(process.env.MONGO_URI, {
@@ -24,6 +35,7 @@ app.use("/api/items", require("./routes/itemRoutes"));
 app.use("/api/cases", require("./routes/caseRoutes"));
 app.use("/api/locations", require("./routes/locationRoutes"));
 app.use("/api/locationitems", require("./routes/locationItemRoutes"));
+app.use("/api/auth", require("./routes/authRoutes"))
 //app.use("api/inventory", require("./routes/inventoryRoutes"));
 //app.use("api/logs", require("./routes/logRoutes"));
 

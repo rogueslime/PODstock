@@ -1,22 +1,22 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import ItemManager from './components/ItemManager';
-import LocationManager from './components/LocationManager';
-import LocationItemManager from './components/LocationItemManager';
+import InventoryView from './components/InventoryView';
+import LoginPortal from './components/LoginPortal';
+import axios from 'axios';
+
+axios.defaults.withCredentials = true;
 
 function App() {
   return (
     <Router>
       <div>
         <nav style={{ padding: '1rem' }}>
-          <Link to="/" style={{ marginRight: '1rem' }}>Item Manager</Link>
-          <Link to="/lm" style={{ marginRight: '1rem' }}>Location Manager</Link>
-          <Link to="/lim">Location Inventory</Link>
+          <Link to="/" style={{ marginRight: '1rem' }}>Inventory View</Link>>
+          <Link to="/loginportal/">Login Portal</Link>
         </nav>
 
         <Routes>
-          <Route path="/" element={<ItemManager />} />
-          <Route path="/lm" element={<LocationManager />} />
-          <Route path="/lim" element={<LocationItemManager />} />
+          <Route path="/" element={<InventoryView />} />
+          <Route path="/loginportal" element = {<LoginPortal />} />
         </Routes>
       </div>
     </Router>
