@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 const path = require("path");
 const locationItemController = require("../controllers/locationItemController");
+const requireAuth = require('../middleware/auth');
 
 // multer configuration
 const storage = multer.diskStorage({
@@ -19,11 +20,11 @@ const upload = multer({
 });
 
 // basic location item control routes
-router.post("/", locationItemController.createLocationItem);
+router.post("/", requireAuth, locationItemController.createLocationItem);
 router.get("/", locationItemController.getLocationItems);
 router.get("/:id",locationItemController.getLocationItemsById);
-router.put("/:id",locationItemController.updateLocationItem);
-router.delete("/:id", locationItemController.deleteLocationItem);
+router.put("/:id", requireAuth,locationItemController.updateLocationItem);
+router.delete("/:id", requireAuth, locationItemController.deleteLocationItem);
 
 // routes for csv imports
 router.post('/import-shipment/:locationId', upload.single('file'), locationItemController.importShipment);

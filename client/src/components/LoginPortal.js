@@ -4,10 +4,10 @@ import ItemManager from './ItemManager';
 import LocationManager from './LocationManager';
 import LocationItemManager from './LocationItemManager';
 
-const LoginPortal = () => {
+const LoginPortal = ({ isLoggedIn, setIsLoggedIn }) => {
     //const [loginFormData, setLoginFormData] = useState({ uname: '', pword: '' });
     const [formData, setFormData] = useState({ uname: '', pword: '' });
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    //const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [user, setUser] = useState(null);
     const [registerMode, setREgisterMode] = useState(false);
     const [activeComponent, setActiveComponent] = useState(null);
@@ -59,6 +59,8 @@ const LoginPortal = () => {
     };
 
     const renderActiveComponent = () => {
+        if (!isLoggedIn) return null;
+
         switch (activeComponent) {
             case 'items' : return <ItemManager />;
             case 'locations' : return <LocationManager />;

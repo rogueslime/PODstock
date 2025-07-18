@@ -4,6 +4,7 @@ import axios from 'axios';
 const LocationManager = () => {
     const [locations, setLocations] = useState([]);
     const [locationFormData, setLocationFormData] = useState({
+        _id: null,
         name: '',
         is_active: true,
     });
@@ -38,13 +39,35 @@ const LocationManager = () => {
         };
 
         try {
-            payload.created_at = new Date();
-            await axios.post('/api/locations', payload);
 
-            setLocationFormData({ name:'', is_active: true});
+            if (locationFormData._id) {
+                await axios.put(`/api/locations/${locationFormData._id}`, payload);
+            } else {
+                payload.created_at = new Date();
+                await axios.post('/api/locations', payload);
+            }
+
+            setLocationFormData({_id:null, name:'', is_active: true});
             fetchLocations();
         } catch (err) {
-            console.error('Error posting location: ',err);
+            console.error('Error saving location: ',err);
+        }
+    };
+
+    const handleEditClick = (location) => {
+        setLocationFormData ({
+            ...location,
+        });
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm('Are you sure you want to delete this location?')) return;
+
+        try {
+            await axios.delete(`/api/locations/${id}`);
+            fetchLocations();
+        } catch (err) {
+            console.error('Error deleting location: ', err);
         }
     };
 
@@ -69,6 +92,9 @@ const LocationManager = () => {
                     />
                 </label>
                 <button type="submit">Submit</button>
+                {locationFormData._id && (
+                    <button type="button" onClick={() => setLocationFormData({ _id: null, name: '', is_active: true })}>Cancel Edit</button>
+                )}
             </form>
 
             <h2>Locations</h2>
@@ -79,6 +105,7 @@ const LocationManager = () => {
                         <th>Active?</th>
                         <th>Created</th>
                         <th>Updated</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -88,6 +115,10 @@ const LocationManager = () => {
                             <td>{location.is_active ? 'Yes' : 'No'}</td>
                             <td>{new Date(location.created_at).toLocaleString()}</td>
                             <td>{new Date(location.updated_at).toLocaleString()}</td>
+                            <td>
+                                <button onClick={() => handleEditClick(location)}>Edit</button>
+                                <button onClick={() => handleDelete(location._id)}>Delete</button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
