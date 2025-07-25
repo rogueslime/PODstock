@@ -55,6 +55,14 @@ const ItemManager = () => {
             updated_at: new Date(),
         };
 
+        // check to see if this item is a duplicate
+        const itemName = formData.name.trim().toLowerCase();
+        const duplicate = items.find(item => item.name.trim().toLowerCase() === itemName);
+        if (duplicate && !editItemId) {
+            alert(`Item "${formData.name}" already exists.`)
+            return;
+        }
+
         try {
             if (editItemId) { // update an existing item if we're holding an EditItemId
                 await axios.put(`/api/items/${editItemId}`, payload);
@@ -175,8 +183,12 @@ const ItemManager = () => {
                     required
                 >
                     <option value="">-- Select Item --</option>
-                    {items.map(item => (
-                        <option key={item._id} value = {item._id}>{item.name}</option>
+                    {items 
+                        .filter(item => !caseByItem[item._id])
+                        .map(item => (
+                            <option key={item._id} value={item._id}>
+                                {item.name}
+                            </option>
                     ))}
                 </select>
                 <button type="submit">Submit Case</button>

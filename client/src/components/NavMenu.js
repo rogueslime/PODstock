@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+//import axios from 'axios';
 import './styles/NavMenu.css';
 
 const NavMenu = ({isLoggedIn, locations}) => {
@@ -30,37 +30,37 @@ const NavMenu = ({isLoggedIn, locations}) => {
 
     return (
         <div className="nav-wrapper">
-            <button className="pancake" onClick = {toggleMenu}>☰</button>
+                <button className={`pancake ${open ? 'open':''}`} onClick = {toggleMenu}>☰</button>
 
-            {open && (
-                <div className="menu-overlay">
-                    <Link to ="/" onClick={() => setOpen(false)}>Home</Link>
-                    <span onClick={toggleInventory}>Inventory</span>
-                    
-                    {inventoryOpen && (
-                        <div className="submenu">
-                            <span className="menu-link" onClick={() => handleLocationClick(null)}>All Inventory</span>
-                            {locations.map(loc => (
-                                <span
-                                    key={loc._id}
-                                    className="menu-link"
-                                    onClick={() => handleLocationClick(loc._id)}
-                                >
-                                    {loc.name} Inventory
-                                </span>
-                            ))}
-                        </div>
-                    )}
+                {open && (
+                    <div className={`menu-overlay ${open ? 'open':''}`}>
+                        <Link to ="/" onClick={() => setOpen(false)}>Home</Link>
+                        <span onClick={toggleInventory}>Inventory</span>
+                        
+                        {inventoryOpen && (
+                            <div className="submenu">
+                                <span className="menu-link" onClick={() => handleLocationClick(null)}>All Inventory</span>
+                                {locations.map(loc => (
+                                    <span
+                                        key={loc._id}
+                                        className="menu-link"
+                                        onClick={() => handleLocationClick(loc._id)}
+                                    >
+                                        {loc.name} Inventory
+                                    </span>
+                                ))}
+                            </div>
+                        )}
 
-                    {!isLoggedIn && (
-                        <Link to="/loginportal" onClick={() => setOpen(false)}>Login</Link>
-                    )}
-                    {isLoggedIn && (
-                        <Link to="/loginportal" onClick={() => setOpen(false)}>Management Portal</Link>
-                    )}
-                </div>
-            )}
-        </div>
+                        {!isLoggedIn && (
+                            <Link to="/loginportal" onClick={() => setOpen(false)}>Login</Link>
+                        )}
+                        {isLoggedIn && (
+                            <Link to="/loginportal" onClick={() => setOpen(false)}>Management Portal</Link>
+                        )}
+                    </div>
+                )}
+            </div>
     )
 }
 

@@ -30,9 +30,9 @@ exports.getLocationItems = async (req, res) => {
 
 exports.getLocationItemsById = async (req, res) => {
     try {
-        const { locationId } = req.params;
+        const { id } = req.params;
 
-        const locationItems = await ItemsLocations.find({ location_id: locationId })
+        const locationItems = await ItemsLocations.find({ location_id: id })
             .populate('item_id')
             .populate('location_id')
         

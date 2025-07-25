@@ -1,36 +1,55 @@
 .nav-wrapper {
-  position: absolute;
-  right: 1rem;
+  position: relative;
 }
 
-.hamburger {
-  position: absolute;
+.pancake {
+  position: fixed;
   top: 1rem;
   right: 1rem;
-  font-size: 2rem;
-  background: none;
-  border: none;
-  cursor: pointer;
   z-index: 1001;
+  background-color: #003366;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.7rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.pancake.open {
+  transform: translateX(-220px);
 }
 
 .menu-overlay {
-  position: absolute;
-  top: 3.5rem;
-  right: 1rem;
-  background: white;
-  border: 1px solid #ccc;
+  position: fixed;
+  top: 0;
+  right: 0;
+  background-color: #003366;
+  color: white;
+  border-radius: 0 0 0 12px;
   padding: 1rem;
+  width: 220px;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
   z-index: 1000;
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.menu-overlay.open {
+  transform: translateX(0);
+}
+
+.menu-overlay a,
+.menu-overlay span {
+  display: block;
+  margin: 0.5rem 0;
+  text-decoration: none;
+  color: white;
+  cursor: pointer;
 }
 
 .submenu {
-  padding-left: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
+  margin-left: 1rem;
 }

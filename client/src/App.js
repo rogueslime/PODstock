@@ -5,6 +5,8 @@ import LoginPortal from './components/LoginPortal';
 import NavMenu from './components/NavMenu';
 import Home from './components/Home';
 import axios from 'axios';
+import '@picocss/pico/css/pico.min.css';
+import './components/styles/theme.css';
 
 axios.defaults.withCredentials = true;
 

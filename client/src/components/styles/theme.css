@@ -1,0 +1,55 @@
+:root {
+  /* Brand colors */
+  --primary: #003366; /* Deep UTC blue */
+  --primary-hover: #002244;
+  --secondary: #f5f5f5; /* Light gray backgrounds */
+  --contrast: #ffffff; /* White for text on dark */
+  
+  /* Typography */
+  --font-family: 'Helvetica Neue', Arial, sans-serif;
+
+  /* Buttons and links */
+  --form-element-active-border-color: var(--primary);
+  --form-element-focus-color: var(--primary);
+  --nav-link-color: var(--primary);
+}
+
+/* Navigation tweaks */
+nav {
+  background-color: var(--secondary);
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+nav a {
+  color: var(--primary);
+  font-weight: bold;
+  margin-right: 1rem;
+}
+
+nav a:hover {
+  color: var(--primary-hover);
+}
+
+/* Button styles */
+button,
+[type=submit],
+[type=reset],
+[type=button] {
+  max-width: 150px;
+  background-color: var(--primary);
+  color: var(--contrast);
+  border-radius: 4px;
+}
+
+button:hover {
+  background-color: var(--primary-hover);
+}
+
+/* Card-like containers */
+section, article, .card {
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 1rem;
+}

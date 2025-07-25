@@ -33,6 +33,13 @@ const LocationManager = () => {
     const handleSubmit = async (e) => { // handles form submit
         e.preventDefault();
 
+        const newLoc = locationFormData.name.trim().toLowerCase();
+        const duplicate = locations.find(loc => loc.name.trim().toLowerCase() === newLoc);
+        if (duplicate) {
+            alert(`Location "${locationFormData.name}" already exists.`);
+            return;
+        }
+
         const payload = {
             ...locationFormData,
             updated_at: new Date(),
