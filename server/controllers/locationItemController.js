@@ -118,6 +118,8 @@ exports.importShipment = async (req, res) => {
     console.log("Filepath saved at... ", filePath);
 
     const results = [];
+    const successes = [];
+    const errors = [];
 
     fs.createReadStream(filePath)
         .pipe(csv())
@@ -128,9 +130,21 @@ exports.importShipment = async (req, res) => {
                     const caseLabel = entry.case_label;
                     const caseQuantity = parseInt(entry.quantity);
 
+                    /*if (!caseLabel) {
+                        errors.push({
+                            caseLabel: caseLabel || '(missing)',
+                            reason: 'Invalid or missing case label.',
+                        });
+                        continue;
+                    }*/
+
                     const foundCase = await Case.findOne({ name: caseLabel }).populate('item_id');
                     if (!foundCase || !foundCase.item_id) {
                         console.log('case ',caseLabel, ' missed - missing case or item.');
+                        errors.push({
+                            caseLabel: caseLabel,
+                            reason: 'Invalid or missing case label.',
+                        });
                         continue;
                     }
 
@@ -141,8 +155,19 @@ exports.importShipment = async (req, res) => {
                         { $inc: { count: totalItems }, updated_at: new Date() },
                         { upsert: true, new: true }
                     );
+
+                    successes.push({
+                        caseLabel,
+                        itemName: foundCase.item_id.name,
+                        quantityAdded: totalItems,
+                    });
                 }
-                res.json({ message: 'Shipment imported.' });
+
+                res.json({ 
+                    message: 'Shipment imported.',
+                    successes,
+                    errors,
+                });
             } catch (err) {
                 console.error('Shipment import error: ',err);
                 res.status(500).json({ error: 'Import error.' });

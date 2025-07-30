@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import ImportErrorBlock from './ImportErrorBlock';
 
 const LocationItemManager = () => {
     const [locations, setLocations] = useState([]);
@@ -11,6 +12,7 @@ const LocationItemManager = () => {
         item_id: '',
         count: 1,
     });
+    const [importErrorData, setImportErrorData] = useState([]);
 
     // shipment import state variables
     const [importFile, setImportFile] = useState(null);
@@ -77,9 +79,16 @@ const LocationItemManager = () => {
         formData.append('file', importFile);
 
         try {
-            await axios.post(`/api/locationitems/${type}/${importLocation}`, formData, {
+            const res = await axios.post(`/api/locationitems/${type}/${importLocation}`, formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
             });
+
+            if(type === 'import-shipment') {
+                const { message, successes, errors } = res.data;
+                console.log('Shipment import');
+                console.log('Errors: ', errors);
+                setImportErrorData(errors);
+            }
             alert(`${type} import successful`);
             fetchLocationItems();
         } catch (err) {
@@ -141,6 +150,20 @@ const LocationItemManager = () => {
                 <input type="file" accept=".csv" onChange={(e) => setImportFile(e.target.files[0])} required />
                 <button type="submit">Import</button>
             </form>
+
+            {importErrorData.length > 0 && (
+                <div>
+                    <h3>Errors during shipment import; please resolve.</h3>
+                    {importErrorData.map((err, index) => (
+                        <ImportErrorBlock
+                            error={err}
+                            onResolved={() => {
+                                setImportErrorData(prev => prev.filter((_, i) => i !== index))
+                            }}
+                        />  
+                    ))}
+                </div>
+            )}
 
             <h3>Import Daily Operations</h3>
             <form onSubmit = { (e) => {e.preventDefault(); handleImportSubmit('daily-operations'); }}>
