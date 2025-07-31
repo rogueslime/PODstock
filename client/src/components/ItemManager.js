@@ -119,13 +119,14 @@ const ItemManager = () => {
         setEditItemId(item._id);
     }
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (type, id) => {
         if (window.confirm("Are you sure you want to delete this item?")) {
             try {
-                await axios.delete(`/api/items/${id}`);
+                await axios.delete(`/api/${type}/${id}`);
                 fetchItems();
+                fetchCases();
             } catch (err) {
-                console.error('Error deleting: ', err);
+                console.error(`Error deleting ${type}: `, err);
             }
         }
     };
@@ -204,6 +205,7 @@ const ItemManager = () => {
                         <th>Updated</th>
                         <th>Actions</th>
                         <th>#/Case</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -215,12 +217,19 @@ const ItemManager = () => {
                             <td>{new Date(item.updated_at).toLocaleString()}</td>
                             <td>
                                 <button onClick={() => handleEdit(item)}>Edit</button>
-                                <button onClick={() => handleDelete(item._id)}>Delete</button>
+                                <button onClick={() => handleDelete('items', item._id)}>Delete</button>
                             </td>
                             <td>
                                 {(caseByItem[item._id] || []).map(c => (
                                     <div key={c._id}>
                                         <b>{c.name}</b>: {c.itemcount}
+                                    </div>
+                                ))}
+                            </td>
+                            <td>
+                                {(caseByItem[item._id] || []).map( c => (
+                                    <div key={c._id}>
+                                        <button onClick = {() => handleDelete('cases', c._id)}>Delete</button>
                                     </div>
                                 ))}
                             </td>

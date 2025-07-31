@@ -61,7 +61,7 @@ exports.updateLocationItem = async (req, res) => {
 
 exports.deleteLocationItem = async (req, res) => {
     try {
-        const result = await ItemsLocation.findByIdAndDelete(req.params.id);
+        const result = await ItemsLocations.findByIdAndDelete(req.params.id);
         if (!result) return res.status(404).json({message: "Location item not found." })
         res.status(200).json({ message: "Location item deleted." })
     } catch (err) {
@@ -144,6 +144,7 @@ exports.importShipment = async (req, res) => {
                         errors.push({
                             caseLabel: caseLabel,
                             reason: 'Invalid or missing case label.',
+                            caseQuantity: caseQuantity,
                         });
                         continue;
                     }

@@ -7,6 +7,7 @@ import LocationItemManager from './LocationItemManager';
 const LoginPortal = ({ isLoggedIn, setIsLoggedIn }) => {
     //const [loginFormData, setLoginFormData] = useState({ uname: '', pword: '' });
     const [formData, setFormData] = useState({ uname: '', pword: '' });
+    const [regFormData, setRegFormData] = useState({ uname: '', pword: '' });
     //const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [user, setUser] = useState(null);
     const [registerMode, setREgisterMode] = useState(false);
@@ -23,9 +24,13 @@ const LoginPortal = ({ isLoggedIn, setIsLoggedIn }) => {
             });
     }, []);
 
-    const handleChange = (e) => {
+    const handleChange = (type, e) => {
         const {name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        if(type === 'reg') {
+            setRegFormData(prev => ({ ...prev, [name]: value }));
+        } else {
+            setFormData(prev => ({ ...prev, [name]: value }));
+        }
     };
 
     const handleLogin = async (e) => {
@@ -43,7 +48,7 @@ const LoginPortal = ({ isLoggedIn, setIsLoggedIn }) => {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('/api/auth/register', formData);
+            await axios.post('/api/auth/register', regFormData);
             alert('Registration successful. Please log in.');
             setREgisterMode(false);
         } catch (err) {
@@ -91,16 +96,16 @@ const LoginPortal = ({ isLoggedIn, setIsLoggedIn }) => {
                         <input
                             name="uname"
                             placeholder="Username"
-                            value={formData.uname}
-                            onChange={handleChange}
+                            value={regFormData.uname}
+                            onChange={(e) => handleChange('reg', e)}
                             required
                         />
                         <input
                             name="pword"
                             type="password"
                             placeholder="Password"
-                            value={formData.pword}
-                            onChange={handleChange}
+                            value={regFormData.pword}
+                            onChange={(e) => handleChange('reg', e)}
                             required
                         />
                         <button type = "submit">Register</button>
@@ -111,7 +116,7 @@ const LoginPortal = ({ isLoggedIn, setIsLoggedIn }) => {
                             name="uname"
                             placeholder="Username"
                             value={formData.uname}
-                            onChange={handleChange}
+                            onChange={(e) => handleChange('login', e)}
                             required
                         />
                         <input
@@ -119,7 +124,7 @@ const LoginPortal = ({ isLoggedIn, setIsLoggedIn }) => {
                             type="password"
                             placeholder="Password"
                             value={formData.pword}
-                            onChange={handleChange}
+                            onChange={(e) => handleChange('login', e)}
                             required
                         />
                         <button type = "submit">Login</button>

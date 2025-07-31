@@ -71,6 +71,17 @@ const LocationItemManager = () => {
         }
     };
 
+    const handleDelete = async (id) => {
+        if (window.confirm("Are you sure you want to delete this item?")) {
+            try {
+                await axios.delete(`/api/locationitems/${id}`);
+                fetchLocationItems();
+            } catch (err) {
+                console.error(`Error deleting location-item: `, err);
+            }
+        }
+    };
+
     // import submission logic
     const handleImportSubmit = async (type) => {
         if (!importFile || !importLocation) return;
@@ -184,6 +195,7 @@ const LocationItemManager = () => {
                         <th>Location</th>
                         <th>Item</th>
                         <th>Quantity</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -192,6 +204,9 @@ const LocationItemManager = () => {
                             <td>{li.location_id?.name || 'Unknown'}</td>
                             <td>{li.item_id?.name || 'Unknown'}</td>
                             <td>{li.count}</td>
+                            <td>
+                                <button onClick = {() => handleDelete(li._id)}>Delete</button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>

@@ -1,4 +1,5 @@
 const Location = require('../models/Locations.js');
+const ItemsLocations = require ('../models/Items_Locations.js');
 
 exports.createLocation = async (req, res) => {
     const location = await Location.create(req.body);
@@ -23,7 +24,13 @@ exports.updateLocation = async (req, res) => {
 }
 
 exports.deleteLocation = async (req, res) => {
-    const result = await Location.findByIdAndDelete(req.params.id);
-    if (!result) return res.status(404).json ({ error: "Location not found." });
-    res.json({ message: "Location deleted." });
+    try {
+        await ItemsLocations.deleteMany({ location_id: req.params.id });
+        console.log('Item-location data deleted.');
+        await Location.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Location deleted.' });
+    } catch (err) {
+        console.error('Error deleting location or associated data: ',err);
+        res.status(500).json({error: 'Server error during delete.'});
+    }
 }
