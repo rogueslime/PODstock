@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -21,6 +22,7 @@ app.use(session({
     maxAge: 1000 * 60 * 60 * 24,
   }
 }));
+app.use('/uploads/images', express.static(path.join(__dirname, 'uploads/images')));
 
 // Connect to DB
 mongoose.connect(process.env.MONGO_URI, {

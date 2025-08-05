@@ -34,3 +34,13 @@ exports.deleteLocation = async (req, res) => {
         res.status(500).json({error: 'Server error during delete.'});
     }
 }
+
+exports.attachImageToLocation = async (locationId, imagePath) => {
+    const location = await Location.findById(locationId);
+    if (!location) throw new Error("Location not found");
+
+    location.image = imagePath;
+    location.updated_at = new Date();
+    await location.save();
+    return location;
+};

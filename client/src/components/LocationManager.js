@@ -78,6 +78,17 @@ const LocationManager = () => {
         }
     };
 
+    const uploadLocationImage = async (locationId, file) => {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const res = await axios.post(`/api/locations/${locationId}/image`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        console.log('Uploaded image path:', res.data.imagePath);
+    };
+
     return (
         <div style = {{ padding: '1rem' }}>
             <h2>Create Location :3</h2>
@@ -113,6 +124,7 @@ const LocationManager = () => {
                         <th>Created</th>
                         <th>Updated</th>
                         <th>Actions</th>
+                        <th>Image</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -125,6 +137,19 @@ const LocationManager = () => {
                             <td>
                                 <button onClick={() => handleEditClick(location)}>Edit</button>
                                 <button onClick={() => handleDelete(location._id)}>Delete</button>
+                            </td>
+                            <td>
+                                <input
+                                    type = "file"
+                                    accept ="image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        if(file) {
+                                            uploadLocationImage(location._id, file);
+                                        }
+                                    }}
+                                />
+                                {location.image ? <b>Image Uploaded</b> : <b> Null </b>}
                             </td>
                         </tr>
                     ))}
