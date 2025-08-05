@@ -131,6 +131,17 @@ const ItemManager = () => {
         }
     };
 
+    const uploadItemImage = async (itemId, file) => {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const res = await axios.post(`/api/items/${itemId}/image`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        console.log('Uploaded image path:', res.data.imagePath);
+    };
+
     return (
         <div style = {{ padding: '1rem' }}>
             <h2>{editItemId ? 'Edit Item' : 'Create Item'}</h2>
@@ -206,6 +217,7 @@ const ItemManager = () => {
                         <th>Actions</th>
                         <th>#/Case</th>
                         <th>Actions</th>
+                        <th>Image</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -232,6 +244,19 @@ const ItemManager = () => {
                                         <button onClick = {() => handleDelete('cases', c._id)}>Delete</button>
                                     </div>
                                 ))}
+                            </td>
+                            <td>
+                                <input
+                                    type = "file"
+                                    accept ="image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        if(file) {
+                                            uploadItemImage(item._id, file);
+                                        }
+                                    }}
+                                />
+                                {item.image ? <b>Image Uploaded</b> : <b> Null </b>}
                             </td>
                         </tr>
                     ))}

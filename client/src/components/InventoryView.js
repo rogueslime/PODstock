@@ -35,7 +35,7 @@ const InventoryView = () => {
     };
 
     const filteredItems = locationItems.filter(li => {
-        const matchesLocation = !selectedLocationId || li.location_id?._id == selectedLocationId;
+        const matchesLocation = !selectedLocationId || li.location_id?._id === selectedLocationId;
         const matchesSearch = li.item_id?.name?.toLowerCase().includes(searchTerm.toLowerCase());
         return matchesLocation && matchesSearch;
     });
@@ -99,7 +99,11 @@ const InventoryView = () => {
                         gap: '1rem'
                     }}
                 >
-                    {filteredItems.map(li => (
+                    {filteredItems.map(li => {
+                        const itemImage = li.item_id?.image;
+
+                        console.log('Item image path: ',itemImage);
+                        return (
                         <div
                             key ={li._id}
                             style = {{
@@ -110,15 +114,15 @@ const InventoryView = () => {
                             }}
                         >
                             <img
-                                src={defaultImage}
+                                src={itemImage ? `http://localhost:5000${itemImage}` : defaultImage}
                                 alt="default"
-                                style={{ width: '100%', height: '150px', objectFit:'cover', marginBottom:'0.5rem'}}
+                                style={{ width: '100%', height: '150px', objectFit: 'cover', marginBottom: '0.5rem' }}
                             />
                             <h3>{li.item_id?.name || 'Unknown'}</h3>
                             <p>Quantity: {li.count}</p>
                             <p>{li.location_id?.name || 'Unknown'}</p>
                         </div>
-                    ))}
+                    )})}
                 </div>
             )}
         </div>

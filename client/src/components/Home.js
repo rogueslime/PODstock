@@ -31,24 +31,27 @@ const Home = () => {
                     gap: '1rem'
                 }}
             >
-                {locations.map(loc => (
-                    <div
-                        key ={loc._id}
-                        style = {{
-                            border: '1px solid #ccc',
-                            borderRadius: '8px',
-                            padding: '1rem',
-                            textAlign: 'center'
-                        }}
-                    >
-                        <img
-                            src={defaultImage}
-                            alt="default"
-                            style={{ width: '300px', height: '200px', objectFit:'cover', marginBottom:'0.5rem'}}
-                        />
-                        <h3>{loc.name || 'Unknown'}</h3>
-                    </div>
-                ))}
+                {locations.map(loc => {
+                    console.log('Image path for ', loc.name, ': http://localhost:5000', loc.image); // ✅ log here
+                    return (
+                        <div
+                            key={loc._id}
+                            style={{
+                                border: '1px solid #ccc',
+                                borderRadius: '8px',
+                                padding: '1rem',
+                                textAlign: 'center'
+                            }}
+                        >
+                            <img
+                                src={loc.image ? `http://localhost:5000${loc.image}` : defaultImage}
+                                alt="default"
+                                style={{ width: '300px', height: '200px', objectFit: 'cover', marginBottom: '0.5rem' }}
+                            />
+                            <h3>{loc.name || 'Unknown'}</h3>
+                        </div>
+                    );
+                })}
             </div>
         </div>
     )

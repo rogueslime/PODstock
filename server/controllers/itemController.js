@@ -38,3 +38,13 @@ exports.deleteItem = async (req, res) => {
         res.status(500).json({error: 'Server error during delete.'});
     }
 }
+
+exports.attachImageToItem = async (itemId, imagePath) => {
+    const item = await Item.findById(itemId);
+    if (!item) throw new Error("Item not found");
+
+    item.image = imagePath;
+    item.updated_at = new Date();
+    await item.save();
+    return item;
+};

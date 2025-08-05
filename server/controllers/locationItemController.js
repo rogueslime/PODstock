@@ -5,6 +5,7 @@ const ItemsLocations = require('../models/Items_Locations.js');
 const Location = require('../models/Locations');
 const Case = require ('../models/Cases');
 const Item = require ('../models/Items');
+const logChange = require('../utils/logInventoryChange');
 
 exports.createLocationItem = async (req, res) => {
     try{
@@ -76,6 +77,7 @@ exports.dailyOperations = async (req, res) => {
     const locationId = req.params.locationId;
     const filePath = path.join(__dirname, '../uploads', req.file.filename);
     console.log('Filepath saved at... ', filePath);
+    const userId = req.session.userId;
 
     const results = [];
 
@@ -99,6 +101,14 @@ exports.dailyOperations = async (req, res) => {
                         { $inc: { count: itemQuantity }, updated_at: new Date() },
                         { upsert: true, new: true }
                     );
+
+                    await logChange({
+                        userId,
+                        itemId: foundItem._id,
+                        locationId,
+                        delta: itemQuantity,
+                        reason: 'daily-op'
+                    });
                 }
                 res.json({ message: 'Daily ops imported.' });
             } catch (err) {
@@ -116,6 +126,7 @@ exports.importShipment = async (req, res) => {
     const locationId = req.params.locationId;
     const filePath = path.join(__dirname, '../uploads', req.file.filename);
     console.log("Filepath saved at... ", filePath);
+    const userId = req.session.userId;
 
     const results = [];
     const successes = [];
@@ -156,6 +167,14 @@ exports.importShipment = async (req, res) => {
                         { $inc: { count: totalItems }, updated_at: new Date() },
                         { upsert: true, new: true }
                     );
+
+                    await logChange({
+                        userId,
+                        itemId: foundCase.item_id._id,
+                        locationId,
+                        delta: totalItems,
+                        reason: 'shipment'
+                    });
 
                     successes.push({
                         caseLabel,

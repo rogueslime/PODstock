@@ -22,7 +22,15 @@ app.use(session({
     maxAge: 1000 * 60 * 60 * 24,
   }
 }));
-app.use('/uploads/images', express.static(path.join(__dirname, 'uploads/images')));
+app.use(
+  '/uploads',
+  express.static('uploads', {
+    setHeaders: (res /*, path*/ ) => {
+      // Let browsers use the file even when it’s requested from another origin / port
+      res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+    },
+  }),
+);
 
 // Connect to DB
 mongoose.connect(process.env.MONGO_URI, {
